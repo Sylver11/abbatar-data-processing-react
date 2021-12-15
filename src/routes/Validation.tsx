@@ -11,13 +11,13 @@ interface Props {
 function Validation(props: Props) {
   return (
     <Stack spacing={2}>
-        <ProcessButton
-            task="validate"
-            handleClick={props.handleClick}
-        />
-        <OutputBox
-            output={props.output}
-        />
+      <ProcessButton
+        task="validate"
+        handleClick={props.handleClick}
+      />
+      <OutputBox
+        output={props.output}
+      />
     </Stack>
   );
 }

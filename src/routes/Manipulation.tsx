@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from '../logo.svg';
-import '../App.css';
+import Stack from '@mui/material/Stack';
+import ProcessButton from "../components/ProcessButton";
+import OutputBox from "../components/OutputBox";
 
-function Manipulation() {
+
+interface Props {
+  output: string;
+  handleClick(task: string): void;  
+}
+
+function Manipulation(props: Props) {
   return (
-    <div className="App">
-      <header className="App-header">
-      <h1>Manipulation</h1>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code>eload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Stack spacing={2}>
+      <ProcessButton
+          task="manipulate"
+          handleClick={props.handleClick}
+      />
+      <OutputBox
+          output={props.output}
+      />
+    </Stack>
   );
 }
 

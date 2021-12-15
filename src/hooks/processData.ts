@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import jsonData from '../data/data_fake.json';
+import dataSchema from '../utils/schemas/data.json';
+import { handleObject } from '../utils/jsonschema.js';
 
 interface ReturnValue {
     output: string;
@@ -6,6 +9,11 @@ interface ReturnValue {
 }
 
 function validate(){
+  // TODO
+  // need to loop over data set more efficiently using some sort of map + ano function
+  jsonData.forEach(element => {
+    handleObject(element,dataSchema )
+});
   return "dummy";
 }
 
