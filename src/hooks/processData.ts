@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import jsonData from '../data/data_fake.json';
 import jsonGeo from '../data/geo_fake.json';
+import p3Data from '../data/p3Data.json';
 import dataSchema from '../utils/schemas/data.json';
 import { handleObject } from '../utils/jsonschema.js';
-
+import { reducer } from '../utils/reducer.js';
 
 
 function validate(){
@@ -14,7 +15,6 @@ function validate(){
 });
   return "dummy";
 }
-
 
 // TODO
 // move props into interface
@@ -65,7 +65,19 @@ function calculate(){
 }
 
 function manipulate(){
-  return "dummy";
+  // the objects of each array must be merged based on the attribute "name"
+  // however, the values of identical attribute names that are number types
+  // of the two objects that are supposed to be merged must be summed
+  // whereas objects that only hold the attribute "name" 
+  // must be ignored (none in the given dataset)
+  
+  var testSet1 = p3Data["testSet1"];
+  var testSet2 = p3Data["testSet2"];
+  // TODO
+  // bit of a hacky solution there 
+  // eventually transfer to TS
+  var result = reducer(testSet1, testSet2);
+  return JSON.stringify(result);
 }
 
 interface ReturnValue {
@@ -91,4 +103,3 @@ export default (): ReturnValue => {
   };
   return { output, handleClick };
 };
-  
