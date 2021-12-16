@@ -1,4 +1,5 @@
 // TODO 
+// move this to TS file 
 // make use of constructor as more efficient
 
 const supportType = ['string', 'number', 'array', 'object', 'boolean', 'integer'];
