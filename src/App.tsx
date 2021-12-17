@@ -43,7 +43,9 @@ function Home() {
     <>
       <main>
         <h2>Welcome to Abbatar</h2>
-        <p>Talk about project experieince here.</p>
+        <p>Talk about project experieince here.
+          Indentation can be a bit off.
+        </p>
         <p>
           This app is build following the instructions supplied by Ingo available for download 
           <b><a href='/React-Programming-Challenge.pdf' download>here</a></b>.
@@ -61,7 +63,7 @@ function App() {
         <Route path="/" element={<Layout />} >
           <Route path="/" element={<Home />} />
           <Route path="validation" element={<Validation output={processData.output} handleClick={processData.handleClick}  />} />
-          <Route path="calculation" element={<Calculation output={processData.output} handleClick={processData.handleClick} />} />
+          <Route path="calculation" element={<Calculation outputCalculation={processData.outputCalculation} handleClick={processData.handleClick} />} />
           <Route path="manipulation" element={<Manipulation output={processData.output} handleClick={processData.handleClick} />} />
         </Route>
       </Routes>

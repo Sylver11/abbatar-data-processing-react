@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import jsonData from '../data/data_fake.json';
+import jsonData from '../data/data.json';
 import jsonGeo from '../data/geo_fake.json';
 import p3Data from '../data/p3Data.json';
 import dataSchema from '../utils/schemas/data.json';
@@ -19,7 +19,7 @@ function validate(){
 // TODO
 // move props into interface
 // and move function into utils
-function calcDistance(lat1: number, lat2: number, lon2: number, lon1: number){
+function calcDistance(lat1: number, lat2: number, lon1: number, lon2: number){
   const R = 6371e3; // metres
   const φ1 = lat1 * Math.PI/180; // φ, λ in radians
   const φ2 = lat2 * Math.PI/180;
@@ -46,6 +46,9 @@ function compare( a: { distance: number; }, b: { distance: number; } ) {
   return 0;
 }
 
+// TODO
+// this part needs lots of refactoring and imroved logic
+// too many loops and need to move parts into utils
 function calculate(){
   // TODO
   // move props into interface
@@ -58,10 +61,42 @@ function calculate(){
     var lon = parseFloat(location[1])
     sortable.push({"lat": lat, "lon": lon, "ipv4": el.ipv4,"geo": el.geo});
   });
+  // Not so sure about this one but these are the two inputs that the calcDistance
+  // takes as a reference point to the locations supplied in the geo.json
+  var lat1 = 0;
+  var lon1 = 0;
+  var withDistances: { distance: number; ipv4: string; }[] = [];
+  for (let i = 0; i <  sortable.length; i++) {
+    var distance = calcDistance(lat1, sortable[i]["lat"], lon1, sortable[i]["lon"]);
+    withDistances.push({"distance": distance, "ipv4": sortable[i]["ipv4"]})
+  } 
   // TODO 
   // need to create distance pairs and then feed it to the below method
-  // sortable.sort( compare ).slice(0,10);
-  return "dummy";
+  withDistances.sort( compare ).slice(0,10);
+  var regexIp = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
+  let arr:{ active: number; asn: number; countrycode: string; id: number; statecode: string|null; meta: string; ipv4: string;}[] = [];
+  for (let i = 0; i <  jsonData.length; i++) {
+    var metaString = jsonData[i]["meta"];
+    var metaStringArray = metaString.match(regexIp);
+    var testing ="";
+    let grade ={};
+    if(metaStringArray){
+      testing = metaStringArray[0];
+      grade = {
+        ipv4: testing 
+      };
+    }
+    arr.push({"active": jsonData[i].active, "asn": jsonData[i].asn, "countrycode":jsonData[i].countrycode, "id": jsonData[i].id, "statecode": jsonData[i].countrycode, "meta":jsonData[i].meta, "ipv4": testing})
+  } 
+  let final: { active: number; asn: number; countrycode: string; id: number; statecode: string|null; meta: string; ipv4: string;}[] = [];
+  arr.map(function(x){ 
+    var result=withDistances.filter(a1=> a1.ipv4==x.ipv4);
+    if(result.length>0) {
+      var index = withDistances.findIndex(y => y.ipv4 === x.ipv4);
+      final[index] = x;
+    }
+  })
+  return final;
 }
 
 function manipulate(){
@@ -82,11 +117,23 @@ function manipulate(){
 
 interface ReturnValue {
   output: string;
+  outputCalculation: { active: number; asn: number; countrycode: string; id: number; statecode: string|null; meta: string; ipv4: string;}[]
   handleClick: (task: string) => void;
 }
 
 export default (): ReturnValue => {
   const [output, setOutput] = useState("");
+  const [outputCalculation, setOutputCalculation] = useState<
+    Array<{
+        active: number,
+        asn: number,
+        countrycode: string,
+        id: number,
+        statecode: string|null,
+        meta: string,
+        ipv4: string
+    }>
+  >([])
   const handleClick = (task: string): void => {
     if (task == null) return;
     switch(task) {
@@ -94,12 +141,12 @@ export default (): ReturnValue => {
         setOutput(validate());
         break;
       case "calculate":
-        setOutput(calculate());
+        setOutputCalculation(calculate());
         break;
       case "manipulate":
         setOutput(manipulate());
         break;
     }
   };
-  return { output, handleClick };
+  return { output, outputCalculation, handleClick };
 };
