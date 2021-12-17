@@ -15,7 +15,7 @@ import ProcessData from './hooks/processData';
 function Layout() {
   return (
     <>
-      <Container maxWidth="sm">
+      <Container >
         <nav>
           <ul>
             <li>
@@ -62,7 +62,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />} >
           <Route path="/" element={<Home />} />
-          <Route path="validation" element={<Validation output={processData.output} handleClick={processData.handleClick}  />} />
+          <Route path="validation" element={<Validation outputValidation={processData.outputValidation} handleClick={processData.handleClick}  />} />
           <Route path="calculation" element={<Calculation outputCalculation={processData.outputCalculation} handleClick={processData.handleClick} />} />
           <Route path="manipulation" element={<Manipulation output={processData.output} handleClick={processData.handleClick} />} />
         </Route>

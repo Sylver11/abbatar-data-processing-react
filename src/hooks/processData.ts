@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import jsonData from '../data/data.json';
-import jsonGeo from '../data/geo_fake.json';
+import jsonGeo from '../data/geo.json';
 import p3Data from '../data/p3Data.json';
-import dataSchema from '../utils/schemas/data.json';
-import { handleObject } from '../utils/jsonschema.js';
+import { validateDataJson, validateGeoJson} from '../utils/jsonschema';
 import { reducer } from '../utils/reducer.js';
 
 
 function validate(){
-  // TODO
-  // need to loop over data set more efficiently using some sort of map + ano function
+  let validationResults: { ok: boolean; message: string; } [] =[];
   jsonData.forEach(element => {
-    handleObject(element,dataSchema )
-});
-  return "dummy";
+    validationResults.push(validateDataJson(element))
+  });
+  jsonGeo.forEach(element => {
+    validationResults.push(validateGeoJson(element))
+  });
+  return validationResults;
 }
 
 // TODO
@@ -72,7 +73,7 @@ function calculate(){
   } 
   // TODO 
   // need to create distance pairs and then feed it to the below method
-  withDistances.sort( compare ).slice(0,10);
+  withDistances = withDistances.sort( compare ).slice(0,10);
   var regexIp = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
   let arr:{ active: number; asn: number; countrycode: string; id: number; statecode: string|null; meta: string; ipv4: string;}[] = [];
   for (let i = 0; i <  jsonData.length; i++) {
@@ -115,13 +116,31 @@ function manipulate(){
   return JSON.stringify(result);
 }
 
+// interface IValidationResults {
+//   validationResults: { ok: false; message: string; }[];
+// }
+
+// interface IMetaData {
+//   metaData: { file_name: string; count_total: number; count_valid: number; }[];
+// }
+
 interface ReturnValue {
+  outputValidation: {
+    ok: boolean;
+    message: string;
+  }[]
   output: string;
   outputCalculation: { active: number; asn: number; countrycode: string; id: number; statecode: string|null; meta: string; ipv4: string;}[]
   handleClick: (task: string) => void;
 }
 
 export default (): ReturnValue => {
+  const [outputValidation, setValidation] = useState<
+  Array<{
+    ok: boolean;
+    message: string;
+  }>
+  >([]);
   const [output, setOutput] = useState("");
   const [outputCalculation, setOutputCalculation] = useState<
     Array<{
@@ -138,7 +157,7 @@ export default (): ReturnValue => {
     if (task == null) return;
     switch(task) {
       case "validate":
-        setOutput(validate());
+        setValidation(validate());
         break;
       case "calculate":
         setOutputCalculation(calculate());
@@ -148,5 +167,5 @@ export default (): ReturnValue => {
         break;
     }
   };
-  return { output, outputCalculation, handleClick };
+  return { outputValidation, output, outputCalculation, handleClick };
 };
